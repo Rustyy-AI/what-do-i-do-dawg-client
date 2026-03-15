@@ -1,20 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { AlertCircle } from "lucide-react";
 
-const questions = [
-  "Would you sacrifice short-term profitability to ensure long-term alignment with your core ethical values?",
-  "Do you believe a leader's primary responsibility is to the shareholders over the community impact?",
-  "In a crisis, would you prioritize maintaining internal morale over external transparency?",
-  "Is radical innovation more important than operational stability in your current strategic framework?",
-];
+// ── Cookie helper ────────────────────────────────────────────────────────────
+function parseCookieJSON<T>(name: string): T | null {
+  const match = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(name + "="));
+  if (!match) return null;
+  try { return JSON.parse(decodeURIComponent(match.split("=")[1])) as T; } catch { return null; }
+}
 
 const Round3 = () => {
+  const [questions, setQuestions] = useState<string[]>([]);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const progress = (Object.keys(answers).length / questions.length) * 100;
+  const [cookieError, setCookieError] = useState(false);
+
+  useEffect(() => {
+    const parsed = JSON.parse(localStorage.getItem("final_questions") ?? "null") as string[] | null;
+    if (!parsed || parsed.length === 0) { setCookieError(true); return; }
+    setQuestions(parsed);
+  }, []);
+
+  const progress = questions.length
+    ? (Object.keys(answers).length / questions.length) * 100
+    : 0;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 md:p-8 bg-background">
       <main className="w-full max-w-3xl bg-card shadow-xl rounded-custom border border-border overflow-hidden flex flex-col max-h-[90vh]">
+
         {/* Header */}
         <header className="p-6 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
           <div className="flex flex-col gap-1">
@@ -49,30 +64,46 @@ const Round3 = () => {
             </p>
           </div>
 
-          <div className="space-y-12">
-            {questions.map((q, idx) => (
-              <article key={idx} className="space-y-6">
-                <h2 className="text-lg font-semibold text-foreground leading-snug">
-                  {idx + 1}. {q}
-                </h2>
-                <div className="flex gap-4">
-                  {["YES", "NO"].map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => setAnswers((prev) => ({ ...prev, [idx]: option }))}
-                      className={`flex-1 flex items-center justify-center gap-3 p-4 border-2 transition-all rounded-custom focus:outline-none focus:ring-2 focus:ring-primary/20 ${
-                        answers[idx] === option
-                          ? "border-primary bg-primary/10"
-                          : "border-border hover:border-primary hover:bg-option-hover-bg"
-                      }`}
-                    >
-                      <span className="text-foreground font-bold">{option}</span>
-                    </button>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
+          {/* Cookie error state */}
+          {cookieError && (
+            <div className="flex flex-col items-center gap-3 py-16 text-destructive">
+              <AlertCircle className="h-8 w-8" />
+              <p className="text-sm font-semibold text-center">Could not load final questions. Please complete Round 2 first.</p>
+              <Link
+                to="/test/round-2"
+                className="mt-2 px-5 py-2 border border-destructive rounded-custom text-sm font-medium hover:bg-destructive/10 transition-colors"
+              >
+                Back to Round 2
+              </Link>
+            </div>
+          )}
+
+          {!cookieError && (
+            <div className="space-y-12">
+              {questions.map((q, idx) => (
+                <article key={idx} className="space-y-6">
+                  <h2 className="text-lg font-semibold text-foreground leading-snug">
+                    {idx + 1}. {q}
+                  </h2>
+                  <div className="flex gap-4">
+                    {["YES", "NO"].map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => setAnswers((prev) => ({ ...prev, [idx]: option }))}
+                        className={`flex-1 flex items-center justify-center gap-3 p-4 border-2 transition-all rounded-custom focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+                          answers[idx] === option
+                            ? "border-primary bg-primary/10"
+                            : "border-border hover:border-primary hover:bg-option-hover-bg"
+                        }`}
+                      >
+                        <span className="text-foreground font-bold">{option}</span>
+                      </button>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Footer */}
