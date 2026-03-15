@@ -1,96 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 37 50% 98%;
+    --foreground: 15 25% 19%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 15 25% 19%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 15 25% 19%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 36 86% 50%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 30 60% 95%;
+    --secondary-foreground: 15 25% 19%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 30 20% 95%;
+    --muted-foreground: 20 10% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 20 60% 52%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 30 60% 90%;
+    --input: 30 30% 90%;
+    --ring: 36 86% 50%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --surface: 37 50% 98%;
+    --nav-bg: 0 0% 100%;
+    --nav-border: 30 60% 90%;
+    --hero-gradient-from: 37 50% 98%;
+    --hero-gradient-to: 30 50% 93%;
+    --card-hover-shadow: 0 20px 40px -12px hsl(36 86% 50% / 0.15);
+    --cta-bg: 15 25% 19%;
+    --cta-foreground: 0 0% 100%;
+    --badge-bg: 30 80% 95%;
+    --progress-track: 30 60% 92%;
+    --question-border: 30 60% 95%;
+    --option-hover-bg: 30 80% 97%;
+    --scrollbar-track: 30 60% 94%;
+    --scrollbar-thumb: 36 86% 50%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 16 30% 7%;
+    --foreground: 37 50% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 16 22% 12%;
+    --card-foreground: 37 50% 98%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 16 22% 12%;
+    --popover-foreground: 37 50% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 36 86% 50%;
+    --primary-foreground: 16 30% 7%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 16 22% 15%;
+    --secondary-foreground: 37 50% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 16 22% 15%;
+    --muted-foreground: 20 15% 55%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 25 55% 45%;
+    --accent-foreground: 37 50% 98%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 16 18% 18%;
+    --input: 16 18% 18%;
+    --ring: 36 86% 50%;
+
+    --surface: 16 30% 7%;
+    --nav-bg: 16 30% 7%;
+    --nav-border: 16 18% 18%;
+    --hero-gradient-from: 16 22% 12%;
+    --hero-gradient-to: 16 30% 7%;
+    --card-hover-shadow: 0 20px 40px -12px hsl(0 0% 0% / 0.4);
+    --cta-bg: 16 35% 4%;
+    --cta-foreground: 0 0% 100%;
+    --badge-bg: 16 30% 15%;
+    --progress-track: 16 22% 15%;
+    --question-border: 16 18% 18%;
+    --option-hover-bg: 16 22% 15%;
+    --scrollbar-track: 16 22% 12%;
+    --scrollbar-thumb: 36 86% 50%;
   }
 }
 
@@ -100,6 +104,49 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
   }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  .hero-gradient {
+    background: linear-gradient(135deg, hsl(var(--hero-gradient-from)) 0%, hsl(var(--hero-gradient-to)) 100%);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: hsl(var(--scrollbar-track));
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--scrollbar-thumb));
+    border-radius: 10px;
+  }
+}
+
+@layer utilities {
+  .round-eight {
+    border-radius: 8px;
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(0.98); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
