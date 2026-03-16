@@ -5,6 +5,7 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import { useLeaveGuard } from "@/hooks/useLeaveGuard";
 import { Graph } from "../components/Graph";
 import Navbar from "../components/Navbar";
+import { auth } from "@/firebase";
 
 function getLS<T>(key: string): T | null {
   try { const r = localStorage.getItem(key); return r ? JSON.parse(r) as T : null; } catch { return null; }
@@ -37,6 +38,8 @@ const Round2 = () => {
     setSubmitError(null);
     setSubmitting(true);
     try {
+      const token         = await auth.currentUser!.getIdToken();
+      const session_id    = localStorage.getItem("session_id");
       const hollandCodes  = getLS<string[]>("holland_codes") ?? [];
       const hollandJobsRaw = getLS<any[]>("holland_jobs") ?? [];
       const refinementQs  = getLS<string[]>("refinement_questions") ?? [];
@@ -44,8 +47,11 @@ const Round2 = () => {
 
       const submitRes = await fetch("http://127.0.0.1:8000/assessment/refinement/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ holland_codes: hollandCodes, jobs: hollandJobsRaw, questions: refinementQs, answers: answerList }),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ session_id, holland_codes: hollandCodes, jobs: hollandJobsRaw, questions: refinementQs, answers: answerList }),
       });
       if (!submitRes.ok) throw new Error(`Refinement submit failed: ${submitRes.status} — ${await submitRes.text()}`);
       const submitData = await submitRes.json();
@@ -53,8 +59,11 @@ const Round2 = () => {
 
       const finalQRes = await fetch("http://127.0.0.1:8000/assessment/final/questions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ holland_codes: hollandCodes, jobs: submitData.jobs }),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ session_id, holland_codes: hollandCodes, jobs: submitData.jobs }),
       });
       if (!finalQRes.ok) throw new Error(`Final questions fetch failed: ${finalQRes.status}`);
       const finalQData = await finalQRes.json();
@@ -70,7 +79,7 @@ const Round2 = () => {
   const answeredCount = Object.keys(answers).length;
   const allAnswered   = questions.length > 0 && answeredCount === questions.length;
 
-    useLeaveGuard(answeredCount > 0 && !submitting);
+  useLeaveGuard(answeredCount > 0 && !submitting);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -140,13 +149,13 @@ const Round2 = () => {
                   <button
                     onClick={() => {
                       if (answeredCount === 0 || window.confirm("Your progress will be lost. Are you sure?")) {
-                        navigate("/test/round-1"); // or round-2 for Round3
+                        navigate("/test/round-1");
                       }
                     }}
                     className="flex-1 px-8 py-4 text-muted-foreground font-bold rounded-custom border-2 border-border hover:bg-muted transition-colors"
                   >
                     Previous Section
-                  </button>       
+                  </button>
                   <button onClick={handleSubmit} disabled={!allAnswered || submitting}
                     className="flex-1 inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-10 py-4 rounded-custom text-lg font-bold hover:bg-accent transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                     {submitting && <Loader2 className="h-5 w-5 animate-spin" />}

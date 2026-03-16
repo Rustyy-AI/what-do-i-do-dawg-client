@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Loader2, AlertCircle } from "lucide-react";
 import { useLeaveGuard } from "@/hooks/useLeaveGuard";
 import Navbar from "../components/Navbar";
+import { auth } from "@/firebase";
 
 interface Question {
   id: string;
@@ -21,7 +22,6 @@ const Round1 = () => {
   const [error, setError]             = useState<string | null>(null);
   const [submitting, setSubmitting]   = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  
 
   useEffect(() => {
     const cachedQuestions = localStorage.getItem(LS_QUESTIONS_KEY);
@@ -69,22 +69,30 @@ const Round1 = () => {
     const questionIds = questions.map((q) => q.text);
     const answerList  = questions.map((q) => (answers[q.id] === "Yes" ? "yes" : "no"));
     try {
+      const token      = await auth.currentUser!.getIdToken();
+      const session_id = localStorage.getItem("session_id");
+
       const res = await fetch("http://127.0.0.1:8000/assessment/holland/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ questions: questionIds, answers: answerList }),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ session_id, questions: questionIds, answers: answerList }),
       });
       if (!res.ok) throw new Error(`Submission failed: ${res.status} — ${await res.text()}`);
       const result = await res.json();
 
-      // Store all results in localStorage
       localStorage.setItem("holland_codes", JSON.stringify(result.holland_codes));
       localStorage.setItem("holland_jobs", JSON.stringify(result.jobs.map((item: { job: string }) => item.job)));
 
       const refinementRes = await fetch("http://127.0.0.1:8000/assessment/refinement/questions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ holland_codes: result.holland_codes, jobs: result.jobs }),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ session_id, holland_codes: result.holland_codes, jobs: result.jobs }),
       });
       if (!refinementRes.ok) throw new Error(`Refinement fetch failed: ${refinementRes.status}`);
       const refinementData = await refinementRes.json();

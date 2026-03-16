@@ -5,6 +5,7 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import { useLeaveGuard } from "@/hooks/useLeaveGuard";
 import { Graph } from "../components/Graph";
 import Navbar from "../components/Navbar";
+import { auth } from "@/firebase";
 
 function getLS<T>(key: string): T | null {
   try { const r = localStorage.getItem(key); return r ? JSON.parse(r) as T : null; } catch { return null; }
@@ -12,13 +13,13 @@ function getLS<T>(key: string): T | null {
 
 const Round3 = () => {
   const navigate = useNavigate();
-  const [questions, setQuestions]     = useState<string[]>([]);
-  const [answers, setAnswers]         = useState<Record<number, string>>({});
-  const [cookieError, setCookieError] = useState(false);
-  const [graphOpen, setGraphOpen]     = useState(false);
+  const [questions, setQuestions]           = useState<string[]>([]);
+  const [answers, setAnswers]               = useState<Record<number, string>>({});
+  const [cookieError, setCookieError]       = useState(false);
+  const [graphOpen, setGraphOpen]           = useState(false);
   const [refinementJobs, setRefinementJobs] = useState<string[]>([]);
-  const [submitting, setSubmitting]   = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitting, setSubmitting]         = useState(false);
+  const [submitError, setSubmitError]       = useState<string | null>(null);
 
   useEffect(() => {
     const parsed = getLS<string[]>("final_questions");
@@ -39,15 +40,21 @@ const Round3 = () => {
     setSubmitError(null);
     setSubmitting(true);
     try {
+      const token        = await auth.currentUser!.getIdToken();
+      const session_id   = localStorage.getItem("session_id");
       const hollandCodes = getLS<string[]>("holland_codes") ?? [];
-      const refinedJobs  = getLS<any[]>("refinement_jobs") ?? []; 
+      const refinedJobs  = getLS<any[]>("refinement_jobs") ?? [];
       const finalQs      = getLS<string[]>("final_questions") ?? [];
       const answerList   = questions.map((_, idx) => answers[idx].toLowerCase());
 
       const res = await fetch("http://127.0.0.1:8000/assessment/final/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         body: JSON.stringify({
+          session_id,
           holland_codes: hollandCodes,
           jobs: refinedJobs,
           questions: finalQs,
@@ -65,7 +72,7 @@ const Round3 = () => {
     }
   };
 
-  useLeaveGuard(answeredCount > 0 && !submitting);  
+  useLeaveGuard(answeredCount > 0 && !submitting);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -138,7 +145,7 @@ const Round3 = () => {
                   <button
                     onClick={() => {
                       if (answeredCount === 0 || window.confirm("Your progress will be lost. Are you sure?")) {
-                        navigate("/test/round-2"); 
+                        navigate("/test/round-2");
                       }
                     }}
                     className="flex-1 px-8 py-4 text-muted-foreground font-bold rounded-custom border-2 border-border hover:bg-muted transition-colors"

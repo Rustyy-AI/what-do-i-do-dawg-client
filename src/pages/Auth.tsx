@@ -1,11 +1,53 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, Brain } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import Navbar from "@/components/Navbar";
+import { auth } from "@/firebase";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 
 const Auth = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      if (mode === "signup") {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        const token = await cred.user.getIdToken();
+        await fetch("http://127.0.0.1:8000/users/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({ email }),
+        });
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+      }
+      const token = await auth.currentUser!.getIdToken();
+      const res = await fetch("http://127.0.0.1:8000/sessions/create", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+      const { session_id } = await res.json();
+      localStorage.setItem("session_id", session_id);
+      navigate("/test/round-1");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -49,7 +91,7 @@ const Auth = () => {
               </label>
             </div>
 
-            <form className="flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
+            <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-foreground/80 ml-1">
                   Email Address
@@ -60,6 +102,9 @@ const Auth = () => {
                     className="w-full rounded-xl border border-border bg-muted py-3.5 pl-12 pr-4 text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-muted-foreground"
                     placeholder="name@example.com"
                     type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
                   />
                 </div>
               </div>
@@ -81,16 +126,24 @@ const Auth = () => {
                     className="w-full rounded-xl border border-border bg-muted py-3.5 pl-12 pr-4 text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-muted-foreground"
                     placeholder="••••••••"
                     type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
                   />
                 </div>
               </div>
 
-              <Link
-                to="/test/round-1"
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-4 rounded-xl shadow-lg transition-all mt-2 text-center active:scale-[0.98]"
+              {error && (
+                <p className="text-red-500 text-sm text-center">{error}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-4 rounded-xl shadow-lg transition-all mt-2 text-center active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Continue
-              </Link>
+                {loading ? "Please wait..." : "Continue"}
+              </button>
 
               <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
