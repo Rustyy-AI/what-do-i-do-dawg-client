@@ -64,6 +64,7 @@ useEffect(() => {
         .nodeAutoColorBy('label')
         .nodeLabel(node => `${node.label}: ${node.caption}`)
         .backgroundColor('rgba(0,0,0,0)')
+        .linkColor(() => '#888888')
         .onNodeHover(node => {
             if (graphRef.current) graphRef.current.style.cursor = node ? 'pointer' : null
         })
