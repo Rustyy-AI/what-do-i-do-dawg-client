@@ -1,0 +1,12 @@
+services:
+  wdidd:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - VITE_FASTAPI_URI=${VITE_FASTAPI_URI}
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+    restart: always
