@@ -45,7 +45,7 @@ const Round2 = () => {
       const refinementQs  = getLS<string[]>("refinement_questions") ?? [];
       const answerList    = questions.map((q) => answers[q.id].toLowerCase());
 
-      const submitRes = await fetch("http://127.0.0.1:8000/assessment/refinement/submit", {
+      const submitRes = await fetch(`${import.meta.env.VITE_FASTAPI_URI}/assessment/refinement/submit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,7 +57,7 @@ const Round2 = () => {
       const submitData = await submitRes.json();
       localStorage.setItem("refinement_jobs", JSON.stringify(submitData.jobs));
 
-      const finalQRes = await fetch("http://127.0.0.1:8000/assessment/final/questions", {
+      const finalQRes = await fetch(`${import.meta.env.VITE_FASTAPI_URI}/assessment/final/questions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -36,7 +36,7 @@ const Round1 = () => {
     }
     (async () => {
       try {
-        const res = await fetch("http://127.0.0.1:8000/assessment/holland/questions");
+        const res = await fetch(`${import.meta.env.VITE_FASTAPI_URI}/assessment/holland/questions`);
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
         const data = await res.json();
         const normalised: Question[] = (Array.isArray(data) ? data : data.questions ?? []).map(
@@ -72,7 +72,7 @@ const Round1 = () => {
       const token      = await auth.currentUser!.getIdToken();
       const session_id = localStorage.getItem("session_id");
 
-      const res = await fetch("http://127.0.0.1:8000/assessment/holland/submit", {
+      const res = await fetch(`${import.meta.env.VITE_FASTAPI_URI}/assessment/holland/submit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -86,7 +86,7 @@ const Round1 = () => {
       localStorage.setItem("holland_codes", JSON.stringify(result.holland_codes));
       localStorage.setItem("holland_jobs", JSON.stringify(result.jobs.map((item: { job: string }) => item.job)));
 
-      const refinementRes = await fetch("http://127.0.0.1:8000/assessment/refinement/questions", {
+      const refinementRes = await fetch(`${import.meta.env.VITE_FASTAPI_URI}/assessment/refinement/questions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

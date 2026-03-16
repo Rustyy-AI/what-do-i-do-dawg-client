@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import {
   Brain, Briefcase, Star, TrendingUp, ChevronRight,
@@ -18,6 +18,18 @@ function parseCookieJSON<T>(name: string): T | null {
 function getLS<T>(key: string): T | null {
   try { const r = localStorage.getItem(key); return r ? JSON.parse(r) as T : null; } catch { return null; }
 }
+
+const ASSESSMENT_LS_KEYS = [
+  "holland_questions",
+  "holland_answers",
+  "holland_codes",
+  "holland_jobs",
+  "refinement_questions",
+  "refinement_jobs",
+  "final_questions",
+  "final_careers",
+  "session_id",
+];
 
 // ── Holland code metadata ─────────────────────────────────────────────────────
 const HOLLAND_META: Record<string, { label: string; desc: string; color: string; icon: React.ReactNode }> = {
@@ -117,6 +129,8 @@ function RadarChart({ codes, scores }: { codes: string[]; scores: number[] }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 const Dashboard = () => {
+  const navigate = useNavigate();
+
   const hollandCodes: string[] = getLS("holland_codes") ?? [];
   const hollandJobs: string[]  = getLS("holland_jobs") ?? [];
   const refinementJobs: any[]  = getLS("refinement_jobs") ?? [];
@@ -139,6 +153,11 @@ const Dashboard = () => {
   const primaryInsight = TRAIT_INSIGHTS[primaryCode];
 
   const hasData = hollandCodes.length > 0 || topJobs.length > 0;
+
+  const handleRetake = () => {
+    ASSESSMENT_LS_KEYS.forEach((key) => localStorage.removeItem(key));
+    navigate("/test/round-1");
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -192,10 +211,11 @@ const Dashboard = () => {
             </div>
 
             <div className="flex gap-3 flex-shrink-0">
-              <Link to="/test/round-1"
+              <button
+                onClick={handleRetake}
                 className="flex items-center gap-2 px-4 py-2.5 border-2 border-border rounded-custom text-sm font-bold text-muted-foreground hover:border-primary hover:text-primary transition-all">
                 <RefreshCw className="w-4 h-4" /> Retake
-              </Link>
+              </button>
               <button className="flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-custom text-sm font-bold hover:bg-accent transition-all shadow-md">
                 <Download className="w-4 h-4" /> Export
               </button>

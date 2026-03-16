@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import ForceGraph3D from '3d-force-graph'
 import { Loader2, AlertCircle } from 'lucide-react'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_URL = import.meta.env.VITE_FASTAPI_URI 
 
 export const Graph = ({ jobs = [], limit = 5000 }) => {
     const graphRef = useRef(null)

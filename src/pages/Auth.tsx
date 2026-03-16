@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, Brain } from "lucide-react";
-import ThemeToggle from "@/components/ThemeToggle";
 import Navbar from "@/components/Navbar";
 import { auth } from "@/firebase";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
@@ -22,7 +21,7 @@ const Auth = () => {
       if (mode === "signup") {
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         const token = await cred.user.getIdToken();
-        await fetch("http://127.0.0.1:8000/users/create", {
+        await fetch(`${import.meta.env.VITE_FASTAPI_URI}/users/create`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -34,7 +33,7 @@ const Auth = () => {
         await signInWithEmailAndPassword(auth, email, password);
       }
       const token = await auth.currentUser!.getIdToken();
-      const res = await fetch("http://127.0.0.1:8000/sessions/create", {
+      const res = await fetch(`${import.meta.env.VITE_FASTAPI_URI}/sessions/create`, {
         method: "POST",
         headers: { "Authorization": `Bearer ${token}` },
       });

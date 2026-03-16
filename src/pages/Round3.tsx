@@ -47,7 +47,7 @@ const Round3 = () => {
       const finalQs      = getLS<string[]>("final_questions") ?? [];
       const answerList   = questions.map((_, idx) => answers[idx].toLowerCase());
 
-      const res = await fetch("http://127.0.0.1:8000/assessment/final/submit", {
+      const res = await fetch(`${import.meta.env.VITE_FASTAPI_URI}/assessment/final/submit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
