@@ -114,7 +114,8 @@ const Round1 = () => {
       }
       const result = await res.json();
       setCookie("holland_codes", JSON.stringify(result.holland_codes));
-      localStorage.setItem("holland_jobs", JSON.stringify(result.jobs));
+      localStorage.setItem("holland_jobs", JSON.stringify(result.jobs.map((item: {job: string}) => item.job)));
+      console.log(localStorage.getItem("holland_jobs"))
       // Fetch refinement questions using holland results
       const refinementRes = await fetch("http://127.0.0.1:8000/assessment/refinement/questions", {
         method: "POST",
