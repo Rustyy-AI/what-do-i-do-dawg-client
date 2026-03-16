@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Lock, Brain } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import Navbar from "@/components/Navbar";
 
 const Auth = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -9,23 +10,7 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="flex items-center justify-between border-b border-border px-6 md:px-10 py-4 bg-nav-bg/50 backdrop-blur-sm">
-        <Link to="/" className="flex items-center gap-4">
-          <Brain className="w-8 h-8 text-primary" />
-          <h2 className="text-foreground text-xl font-bold leading-tight tracking-tight">
-            PsychoAI
-          </h2>
-        </Link>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <Link
-            to="/"
-            className="flex min-w-[84px] items-center justify-center rounded-xl h-10 px-4 bg-primary/10 text-primary text-sm font-bold hover:bg-primary/20 transition-colors"
-          >
-            Help
-          </Link>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Main */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
